@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav"
+    app:startDestination="@id/frg_login">
+
+    <fragment
+        android:id="@+id/frgmenu"
+        android:name="com.fvjulio.navegacion.frgmenu"
+        android:label="fragment_frgmenu"
+        tools:layout="@layout/fragment_frgmenu" >
+        <action
+            android:id="@+id/action_frgmenu_to_frg_grupos"
+            app:destination="@id/frg_grupos"
+            app:enterAnim="@anim/anim3"
+            app:exitAnim="@anim/anim4"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/frg_login"
+        android:name="com.fvjulio.navegacion.frg_login"
+        android:label="fragment_frg_login"
+        tools:layout="@layout/fragment_frg_login" >
+        <action
+            android:id="@+id/action_frg_login_to_frgmenu"
+            app:enterAnim="@anim/anim1"
+            app:exitAnim="@anim/anim2"
+            app:destination="@id/frgmenu" />
+        <action
+            android:id="@+id/action_frg_login_to_rfg_registro"
+            app:enterAnim="@anim/anim1"
+            app:exitAnim="@anim/anim2"
+            app:destination="@id/rfg_registro" />
+        <action
+            android:id="@+id/action_frg_login_to_frg_recuperacontra"
+            app:destination="@id/frg_recuperacontra" />
+    </fragment>
+    <fragment
+        android:id="@+id/frg_recuperacontra"
+        android:name="com.fvjulio.navegacion.frg_recuperacontra"
+        android:label="fragment_frg_recuperacontra"
+        tools:layout="@layout/fragment_frg_recuperacontra" />
+    <fragment
+        android:id="@+id/rfg_registro"
+        android:name="com.fvjulio.navegacion.rfg_registro"
+        android:label="fragment_rfg_registro"
+        tools:layout="@layout/fragment_rfg_registro" />
+    <fragment
+        android:id="@+id/frg_grupos"
+        android:name="com.fvjulio.navegacion.frg_grupos"
+        android:label="fragment_frg_grupos"
+        tools:layout="@layout/fragment_frg_grupos" >
+        <action
+            android:id="@+id/action_frg_grupos_to_frg_Estudiante"
+            app:destination="@id/frg_Estudiante"
+            app:enterAnim="@anim/anim5"
+            app:exitAnim="@anim/anim5"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/frg_Estudiante"
+        android:name="com.fvjulio.navegacion.frg_Estudiante"
+        android:label="fragment_frg__estudiante"
+        tools:layout="@layout/fragment_frg__estudiante" >
+        <action
+            android:id="@+id/action_frg_Estudiante_to_frgGraficaPastel"
+            app:destination="@id/frgGraficaPastel" />
+        <action
+            android:id="@+id/action_frg_Estudiante_to_frgGraficaBarra"
+            app:destination="@id/frgGraficaBarra" />
+    </fragment>
+    <fragment
+        android:id="@+id/frgGraficaPastel"
+        android:name="com.fvjulio.navegacion.frgGraficaPastel"
+        android:label="fragment_frg_grafica_pastel"
+        tools:layout="@layout/fragment_frg_grafica_pastel" />
+    <fragment
+        android:id="@+id/frgGraficaBarra"
+        android:name="com.fvjulio.navegacion.frgGraficaBarra"
+        android:label="fragment_frg_grafica_barra"
+        tools:layout="@layout/fragment_frg_grafica_barra" />
+</navigation>
