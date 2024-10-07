@@ -40,13 +40,13 @@ public class AdapterGrupo extends RecyclerView.Adapter<AdapterGrupo.viewHolderGr
     @Override
     public void onBindViewHolder(@NonNull AdapterGrupo.viewHolderGrupo holder, int position) {
 
-       MGrupo gpo=lista.get(position);/*
-        holder.txtNombreAsignatura.setText(gpo.getNombreAsignatura());
-        holder.txtClaveGrupo.setText(gpo.getClaveGrupo());
-        holder.txtNombreDocente.setText(gpo.getNombreDocente());
-        holder.txtPeriodo.setText(gpo.getPeriodo()==1?"Enero-Mayo":gpo.getPeriodo()==2?"Verano":"Agosto-Diciembre");
-        holder.txtOp.setText(gpo.getOp()==1?"Ordinario":gpo.getOp()==2?"Recursamiento":"Especial");
-        */
+       MGrupo gpo=lista.get(position);
+        holder.txtNombreAsignatura.setText(gpo.getNombreAsig());
+        holder.txtClaveGrupo.setText(gpo.getClave());
+        holder.txtNombreDocente.setText(gpo.getNombreDoc());
+        holder.txtPeriodo.setText(gpo.getNombrePer());
+        //holder.txtOp.setText(gpo.getOp()==1?"Ordinario":gpo.getOp()==2?"Recursamiento":"Especial");
+
         holder.btnver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

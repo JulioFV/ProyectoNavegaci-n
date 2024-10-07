@@ -35,6 +35,9 @@ import java.util.HashMap;
 import java.util.Map;
 import com.fvjulio.navegacion.volley.API;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 
 public class frg_grupos extends Fragment {
     private EditText txtFiltro;
@@ -70,6 +73,12 @@ public class frg_grupos extends Fragment {
 
                 }
             });
+            paquete=this.getArguments();
+            if(paquete!=null){
+                txtNombre.setText(paquete.getString("user"));
+            }
+            rec=view.findViewById(R.id.frg_grupo_recycler_view);
+
             lista=llenadoDesdeBD();
 
 //            rec=view.findViewById(R.id.frg_grupo_recycler_view);
@@ -122,7 +131,25 @@ public class frg_grupos extends Fragment {
                         try {
                             //LEER AQUI EL CONTENIDO DE LA VARIABLE response
 
-                            Log.e("respuesta " , response);
+                            JSONObject contenido = new JSONObject(response);
+                            JSONArray array=contenido.getJSONArray("contenido");
+                            MGrupo obj=new MGrupo();
+                            for (int i = 0; i < array.length(); i++) {
+                                obj=new MGrupo();
+                                JSONObject pos=new JSONObject(array.getString(i));
+                                obj.setIdGrupo(pos.getInt("idGrupo"));
+                                obj.setClave(pos.getString("clave"));
+                                obj.setNombreAsig(pos.getString("nombreAsig"));
+                                obj.setNombreDoc(pos.getString("nombreDoc")+" "+pos.getString("app") + " "+
+                                        pos.getString("apm"));
+                                obj.setNombrePer("nombrePer");
+                                lista.add(obj);
+                            }
+
+                            rec.setHasFixedSize(true);
+                            rec.setLayoutManager(new LinearLayoutManager(getContext()));
+                            adapter=new AdapterGrupo(lista);
+                            rec.setAdapter(adapter);
 
 
 
