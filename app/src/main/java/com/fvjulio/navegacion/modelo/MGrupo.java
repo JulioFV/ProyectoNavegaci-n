@@ -1,63 +1,119 @@
 package com.fvjulio.navegacion.modelo;
 
 public class MGrupo {
-    private String claveGrupo;
-    private String nombreAsignatura;
-    private String nombreDocente;
-    private int periodo;
-    private int op;
+    private int idGrupo;
+    private String clave;
+    private int idAsignatura;
+    private int idDocente;
+    private int idPeriodo;
+    private String nombreAsig;
+    private String nombreDoc;
+    private String app;
+    private String apm;
+    private String nombrePer;
 
     public MGrupo() {
+
     }
 
-    public MGrupo(String claveGrupo, String nombreAsignatura, String nombreDocente, int periodo, int op) {
-        this.claveGrupo = claveGrupo;
-        this.nombreAsignatura = nombreAsignatura;
-        this.nombreDocente = nombreDocente;
-        this.periodo = periodo;
-        this.op = op;
+    public MGrupo(int idGrupo, String clave, int idAsignatura, int idDocente, int idPeriodo, String nombreAsig, String nombreDoc, String app, String apm, String nombrePer) {
+        this.idGrupo = idGrupo;
+        this.clave = clave;
+        this.idAsignatura = idAsignatura;
+        this.idDocente = idDocente;
+        this.idPeriodo = idPeriodo;
+        this.nombreAsig = nombreAsig;
+        this.nombreDoc = nombreDoc;
+        this.app = app;
+        this.apm = apm;
+        this.nombrePer = nombrePer;
     }
 
-    public String getClaveGrupo() {
-        return claveGrupo;
+    public MGrupo(String clave, String nombreAsignatura, String nombreDocente, int periodo,int op) {
+        this.clave = clave;
+        this.nombreAsig = nombreAsignatura;
+        this.nombreDoc = nombreDocente;
+        this.idPeriodo = periodo;
+
     }
 
-    public void setClaveGrupo(String claveGrupo) {
-        this.claveGrupo = claveGrupo;
+    public int getIdGrupo() {
+        return idGrupo;
     }
 
-    public String getNombreAsignatura() {
-        return nombreAsignatura;
+    public void setIdGrupo(int idGrupo) {
+        this.idGrupo = idGrupo;
     }
 
-    public void setNombreAsignatura(String nombreAsignatura) {
-        this.nombreAsignatura = nombreAsignatura;
+    public String getClave() {
+        return clave;
     }
 
-    public String getNombreDocente() {
-        return nombreDocente;
+    public void setClave(String clave) {
+        this.clave = clave;
     }
 
-    public void setNombreDocente(String nombreDocente) {
-        this.nombreDocente = nombreDocente;
+    public int getIdAsignatura() {
+        return idAsignatura;
     }
 
-    public int getPeriodo() {
-        return periodo;
+    public void setIdAsignatura(int idAsignatura) {
+        this.idAsignatura = idAsignatura;
     }
 
-    public void setPeriodo(int periodo) {
-        this.periodo = periodo;
+    public int getIdDocente() {
+        return idDocente;
     }
 
-    public int getOp() {
-        return op;
+    public void setIdDocente(int idDocente) {
+        this.idDocente = idDocente;
     }
 
-    public void setOp(int op) {
-        this.op = op;
+    public int getIdPeriodo() {
+        return idPeriodo;
     }
 
+    public void setIdPeriodo(int idPeriodo) {
+        this.idPeriodo = idPeriodo;
+    }
 
+    public String getNombreAsig() {
+        return nombreAsig;
+    }
 
+    public void setNombreAsig(String nombreAsig) {
+        this.nombreAsig = nombreAsig;
+    }
+
+    public String getNombreDoc() {
+        return nombreDoc;
+    }
+
+    public void setNombreDoc(String nombreDoc) {
+        this.nombreDoc = nombreDoc;
+    }
+
+    public String getApp() {
+        return app;
+    }
+
+    public void setApp(String app) {
+        this.app = app;
+    }
+
+    public String getApm() {
+        return apm;
+    }
+
+    public void setApm(String apm) {
+        this.apm = apm;
+    }
+
+    public String getNombrePer() {
+        return nombrePer;
+    }
+
+    public void setNombrePer(String nombrePer) {
+        this.nombrePer = nombrePer;
+    }
 }

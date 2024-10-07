@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -12,16 +13,27 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.fvjulio.navegacion.adapter.AdapterGrupo;
 import com.fvjulio.navegacion.modelo.MGrupo;
+import com.fvjulio.navegacion.volley.VolleySingleton;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import com.fvjulio.navegacion.volley.API;
 
 
 public class frg_grupos extends Fragment {
@@ -58,13 +70,14 @@ public class frg_grupos extends Fragment {
 
                 }
             });
+            lista=llenadoDesdeBD();
 
-            rec=view.findViewById(R.id.frg_grupo_recycler_view);
-            rec.setHasFixedSize(true);
-            rec.setLayoutManager(new LinearLayoutManager(getContext()));
-            lista=llenadoManual();
-            adapter=new AdapterGrupo(lista);
-            rec.setAdapter(adapter);
+//            rec=view.findViewById(R.id.frg_grupo_recycler_view);
+//            rec.setHasFixedSize(true);
+//            rec.setLayoutManager(new LinearLayoutManager(getContext()));
+//            lista=llenadoManual();
+//            adapter=new AdapterGrupo(lista);
+//            rec.setAdapter(adapter);
 
         paquete= this.getArguments();
         if(paquete!=null){
@@ -77,14 +90,71 @@ public class frg_grupos extends Fragment {
        ArrayList<MGrupo> lista2=new ArrayList<MGrupo>();
 
         for (MGrupo gpo: lista){
-            if(gpo.getClaveGrupo().contains(s.toString()) || gpo.getNombreAsignatura().contains(s.toString())){
+            if(gpo.getClave().contains(s.toString()) || gpo.getNombreAsig().contains(s.toString())){
                 lista2.add(gpo);
             }
         }
         adapter.filtro(lista2);
     }
 
-    private ArrayList<MGrupo> llenadoManual() {
+    private ArrayList<MGrupo> llenadoDesdeBD() {
+        ArrayList<MGrupo> lista=new ArrayList<MGrupo>();
+
+        // Crear un ProgressBar
+        ProgressBar progressBar = new ProgressBar(this.getContext());
+        progressBar.setIndeterminate(true); // Estilo de carga indeterminada
+
+        // Crear el AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
+        builder.setTitle("Por favor, espera");
+        builder.setMessage("Conectandose con el servidor...");
+        builder.setView(progressBar);
+        builder.setCancelable(false); // Evitar que se pueda cancelar
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        RequestQueue colaDeSolicitudes= VolleySingleton.getInstance(this.getContext()).getRequestQueue();
+        StringRequest solicitud= new StringRequest(Request.Method.POST,API.LISTARGPO,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        dialog.dismiss();//apaga el cuadro de dialogo
+                        try {
+                            //LEER AQUI EL CONTENIDO DE LA VARIABLE response
+
+                            Log.e("respuesta " , response);
+
+
+
+                    }catch (Exception ex){
+                        //DETECTA ERRORES EN LA LECTURA DEL ARCHIVO JSON
+
+                    }
+
+                }
+    }, new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            dialog.dismiss();
+            // DETECTA ERRORES EN LA COMUNICACIÓN
+        }
+    }){
+        @Override
+        protected Map<String, String> getParams(){
+            Map<String, String> param=new HashMap<String,String>();
+            //PASA PARAMETROS A LA SOLICITUD
+            param.put("id","1");
+            return param;
+        }
+    };
+    //ENVIA LA SOLICITUD
+        colaDeSolicitudes.add(solicitud);
+
+
+        return lista;
+    }
+
+   private ArrayList<MGrupo> llenadoManual() {
         ArrayList<MGrupo> lista=new ArrayList<MGrupo>();
         lista.add(new MGrupo("78BA","Aplicaciónes Móviles Nativas de Código Abierto",
                 "Mario Perez Bautista",3,1));
