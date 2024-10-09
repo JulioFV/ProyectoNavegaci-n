@@ -57,6 +57,9 @@
             app:enterAnim="@anim/anim5"
             app:exitAnim="@anim/anim5"
             />
+        <action
+            android:id="@+id/action_frg_grupos_to_frg_CRUD_gpo"
+            app:destination="@id/frg_CRUD_gpo" />
     </fragment>
     <fragment
         android:id="@+id/frg_Estudiante"
@@ -80,4 +83,9 @@
         android:name="com.fvjulio.navegacion.frgGraficaBarra"
         android:label="fragment_frg_grafica_barra"
         tools:layout="@layout/fragment_frg_grafica_barra" />
+    <fragment
+        android:id="@+id/frg_CRUD_gpo"
+        android:name="com.fvjulio.navegacion.frg_CRUD_gpo"
+        android:label="fragment_frg__c_r_u_d_gpo"
+        tools:layout="@layout/fragment_frg__c_r_u_d_gpo" />
 </navigation>

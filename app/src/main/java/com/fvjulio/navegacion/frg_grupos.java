@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import com.fvjulio.navegacion.volley.API;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -48,6 +49,8 @@ public class frg_grupos extends Fragment {
     private RecyclerView rec;
     private NavController navegador;
 
+    private FloatingActionButton btnAdd;
+
 
 
     @Override
@@ -57,6 +60,14 @@ public class frg_grupos extends Fragment {
 
             txtNombre = view.findViewById(R.id.grupos_txtnombre);
             txtFiltro=view.findViewById(R.id.frg_grupo_txtbuscar);
+            btnAdd=view.findViewById(R.id.frggpo_btn_mas);
+            navegador= Navigation.findNavController(view);
+            btnAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clicAgregar();
+                }
+            });
             txtFiltro.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -95,6 +106,13 @@ public class frg_grupos extends Fragment {
         navegador= Navigation.findNavController(view);//Es para que funcione el Navegador
     }
 
+    private void clicAgregar() {
+        //Aqui va el nav controller
+
+        navegador.navigate(R.id.action_frg_grupos_to_frg_CRUD_gpo);
+
+    }
+
     private void buscador(String s) {
        ArrayList<MGrupo> lista2=new ArrayList<MGrupo>();
 
@@ -108,6 +126,9 @@ public class frg_grupos extends Fragment {
 
     private ArrayList<MGrupo> llenadoDesdeBD() {
         ArrayList<MGrupo> lista=new ArrayList<MGrupo>();
+
+        //Crea un AlertDialog
+        AlertDialog.Builder msg = new AlertDialog.Builder(this.getContext());
 
         // Crear un ProgressBar
         ProgressBar progressBar = new ProgressBar(this.getContext());
@@ -156,6 +177,12 @@ public class frg_grupos extends Fragment {
                     }catch (Exception ex){
                         //DETECTA ERRORES EN LA LECTURA DEL ARCHIVO JSON
 
+                            msg.setTitle("Error");
+                            msg.setMessage("La información no se pudo leer");
+                            msg.setPositiveButton("Aceptar",null);
+                            AlertDialog dialog=msg.create();
+                            msg.show();
+
                     }
 
                 }
@@ -164,6 +191,11 @@ public class frg_grupos extends Fragment {
         public void onErrorResponse(VolleyError error) {
             dialog.dismiss();
             // DETECTA ERRORES EN LA COMUNICACIÓN
+            msg.setTitle("Error");
+            msg.setMessage("No se pudo conectar con el servidor");
+            msg.setPositiveButton("Aceptar",null);
+            AlertDialog dialog=msg.create();
+            msg.show();
         }
     }){
         @Override
