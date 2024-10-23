@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.fvjulio.navegacion.modelo.MDocente;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link frgmenu#newInstance} factory method to
@@ -22,11 +24,14 @@ import android.widget.TextView;
  */
 public class frgmenu extends Fragment {
     private  Bundle paquete;
-    private TextView txtNombre;
+    private TextView txtNombre,txtCorreo,txtTitulo;
 
     private CardView btnGrupos;
 
     private NavController navegador;
+
+    private MDocente obj;
+
 
 
 
@@ -36,6 +41,8 @@ public class frgmenu extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         txtNombre = view.findViewById(R.id.menu_txtnombre);
         btnGrupos =  view.findViewById(R.id.menu_btn_grupos);
+        txtCorreo=view.findViewById(R.id.menu_txtcorreo);
+        txtTitulo=view.findViewById(R.id.menu_txtmatricula);
 
         btnGrupos.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,16 +53,19 @@ public class frgmenu extends Fragment {
 
         paquete= this.getArguments();
         if(paquete!=null){
-            txtNombre.setText(paquete.getString("user"));
+            obj=(MDocente) paquete.getSerializable("user");
+            txtNombre.setText(obj.getGrado()+" "+obj.getApp()+" "+obj.getApm()+" "+obj.getNombre());
+            txtTitulo.setText(obj.getGrado()+" "+obj.getTitulo());
+            txtCorreo.setText(obj.getCorreo());
         }
         navegador= Navigation.findNavController(view);//Es para que funcione el Navegador
     }
 
     private void clicGrupos() {
 
-        String nombre = this.txtNombre.getText().toString();
-        if(!nombre.equals("")){
-            paquete.putString("user",nombre);
+        //String nombre = this.txtNombre.getText().toString();
+        if(paquete!=null){
+            paquete.putSerializable("user",obj);
         }
 
         navegador.navigate(R.id.action_frgmenu_to_frg_grupos,paquete);

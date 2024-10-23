@@ -135,11 +135,42 @@
                         android:textSize="14sp"
                         android:textColor="@android:color/darker_gray"/>
                 </LinearLayout>
-                <Button
+
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Ver"
-                    android:id="@+id/item_gpo_btnver"/>
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    >
+                    <Button
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Ver"
+                        android:id="@+id/item_gpo_btnver"/>
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:src="@drawable/lapiz"
+                        android:clickable="true"
+                        android:id="@+id/it_btn_editar"
+                        />
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/eliminar"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:id="@+id/it_btn_eliminar"
+                        />
+
+
+
+                </LinearLayout>
+
             </LinearLayout>
 
         </RelativeLayout>

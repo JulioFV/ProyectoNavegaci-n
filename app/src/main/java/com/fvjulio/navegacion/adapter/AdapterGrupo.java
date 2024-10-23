@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,7 +22,9 @@ public class AdapterGrupo extends RecyclerView.Adapter<AdapterGrupo.viewHolderGr
 
     private ArrayList <MGrupo> lista;
     private Bundle paquete;
+
     private TextView txtUsuario;
+
 
 
     public AdapterGrupo(ArrayList<MGrupo> lista){
@@ -40,19 +43,53 @@ public class AdapterGrupo extends RecyclerView.Adapter<AdapterGrupo.viewHolderGr
     @Override
     public void onBindViewHolder(@NonNull AdapterGrupo.viewHolderGrupo holder, int position) {
 
-       MGrupo gpo=lista.get(position);
+        MGrupo gpo=lista.get(position);
         holder.txtNombreAsignatura.setText(gpo.getNombreAsig());
         holder.txtClaveGrupo.setText(gpo.getClave());
         holder.txtNombreDocente.setText(gpo.getNombreDoc());
         holder.txtPeriodo.setText(gpo.getNombrePer());
+        paquete = new Bundle();
+
+
+
+
+
+        holder.btnEditar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                paquete.putSerializable("objeto" , gpo);
+                clicEditar(v);
+            }
+        });
+        holder.btnEliminar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                paquete.putSerializable("objeto" , gpo);
+                clicEliminar(v);
+            }
+        });
         //holder.txtOp.setText(gpo.getOp()==1?"Ordinario":gpo.getOp()==2?"Recursamiento":"Especial");
 
         holder.btnver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 clicVer(v,gpo);
             }
         });
+
+    }
+
+    private void clicEliminar(View v) {
+        NavController nav = Navigation.findNavController(v);
+        paquete.putInt("op",1);
+        nav.navigate(R.id.action_frg_grupos_to_frg_CRUD_gpo,paquete);
+    }
+
+    private void clicEditar(View v) {
+        NavController nav = Navigation.findNavController(v);
+        paquete.putInt("op",2);
+        nav.navigate(R.id.action_frg_grupos_to_frg_CRUD_gpo,paquete);
 
     }
 
@@ -76,7 +113,7 @@ public class AdapterGrupo extends RecyclerView.Adapter<AdapterGrupo.viewHolderGr
     public class viewHolderGrupo extends RecyclerView.ViewHolder {
 
         Button btnver;
-
+        ImageView btnEditar,btnEliminar;
          TextView txtNombreAsignatura, txtNombreDocente,txtClaveGrupo,txtPeriodo,txtOp;
 
         public viewHolderGrupo(@NonNull View itemView) {
@@ -88,6 +125,9 @@ public class AdapterGrupo extends RecyclerView.Adapter<AdapterGrupo.viewHolderGr
             txtOp= itemView.findViewById(R.id.item_gpo_op2);
             btnver = itemView.findViewById(R.id.item_gpo_btnver);
             txtUsuario=itemView.findViewById(R.id.grupos_txtnombre);
+            btnEditar=itemView.findViewById(R.id.it_btn_editar);
+            btnEliminar=itemView.findViewById(R.id.it_btn_eliminar);
+
         }
     }
 

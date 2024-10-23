@@ -40,6 +40,9 @@ public class frg_CRUD_gpo extends Fragment {
 
     private EditText txtClaveGrupo, txtIdAsignatura,txtIdDocente,txtIdPeriodo;
     private CardView btnGuardar,btnEliminar;
+    private Bundle paquete;
+    private MGrupo grupo;
+    private int op;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -50,6 +53,24 @@ public class frg_CRUD_gpo extends Fragment {
         txtIdPeriodo = view.findViewById(R.id.crudgpo_txt_idperiodo);
         btnEliminar=view.findViewById(R.id.crud_gpo_btn_eliminar);
         btnGuardar=view.findViewById(R.id.crudgpo_btnguardar);
+        paquete=getArguments();
+        if (paquete!=null){
+            grupo= (MGrupo) paquete.getSerializable("objeto");
+            op=paquete.getInt("op");
+            txtClaveGrupo.setText(grupo.getClave());
+            txtIdAsignatura.setText(grupo.getIdAsignatura() + "");
+            txtIdDocente.setText(grupo.getIdDocente()+"");
+            txtIdPeriodo.setText(grupo.getIdPeriodo()+"");
+            if (op==1){//Opcion 1 es para ELIMINAR
+                btnEliminar.setVisibility(View.VISIBLE);
+                btnGuardar.setVisibility(View.GONE);
+            }
+            if (op==2){//Opcion 2 es para EDITAR
+                btnEliminar.setVisibility(View.GONE);
+                btnGuardar.setVisibility(View.VISIBLE);
+
+            }
+        }
         btnEliminar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,6 +88,91 @@ public class frg_CRUD_gpo extends Fragment {
     }
 
     private void clicGuardar() {
+        if(op==2){
+            editar();
+        }
+        else{
+            Guardar();
+        }
+    }
+
+    private void editar() {
+        AlertDialog.Builder msg = new AlertDialog.Builder(this.getContext());
+
+        // Crear un ProgressBar
+        ProgressBar progressBar = new ProgressBar(this.getContext());
+        progressBar.setIndeterminate(true); // Estilo de carga indeterminada
+
+        // Crear el AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
+        builder.setTitle("Por favor, espera");
+        builder.setMessage("Conectandose con el servidor...");
+        builder.setView(progressBar);
+        builder.setCancelable(false); // Evitar que se pueda cancelar
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        RequestQueue colaDeSolicitudes= VolleySingleton.getInstance(this.getContext()).getRequestQueue();
+        StringRequest solicitud= new StringRequest(Request.Method.POST, API.EDITARGPO,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        dialog.dismiss();//apaga el cuadro de dialogo
+                        try {
+                            //LEER AQUI EL CONTENIDO DE LA VARIABLE response
+                            msg.setTitle("Guardado");
+                            msg.setMessage("La información se modifico correctamente");
+                            msg.setPositiveButton("Aceptar",null);
+                            AlertDialog dialog=msg.create();
+                            msg.show();
+
+
+
+                        }catch (Exception ex){
+                            //DETECTA ERRORES EN LA LECTURA DEL ARCHIVO JSON
+
+                            msg.setTitle("Error");
+                            msg.setMessage("La información no se pudo leer");
+                            msg.setPositiveButton("Aceptar",null);
+                            AlertDialog dialog=msg.create();
+                            msg.show();
+
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                dialog.dismiss();
+                // DETECTA ERRORES EN LA COMUNICACIÓN
+                msg.setTitle("Error");
+                msg.setMessage("No se pudo conectar con el servidor");
+                msg.setPositiveButton("Aceptar",null);
+                AlertDialog dialog=msg.create();
+                msg.show();
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams(){
+                Map<String, String> param=new HashMap<String,String>();
+                //PASA PARAMETROS A LA SOLICITUD
+                param.put("idGrupo",grupo.getIdGrupo() + "");
+                param.put("clave",txtClaveGrupo.getText().toString());
+                param.put("idAsignatura",txtIdAsignatura.getText().toString());
+                param.put("idDocente",txtIdDocente.getText().toString());
+                param.put("idPeriodo",txtIdPeriodo.getText().toString());
+                return param;
+            }
+        };
+        //ENVIA LA SOLICITUD
+        colaDeSolicitudes.add(solicitud);
+
+
+
+
+    }
+
+    private void Guardar() {
 
         AlertDialog.Builder msg = new AlertDialog.Builder(this.getContext());
 
@@ -142,6 +248,79 @@ public class frg_CRUD_gpo extends Fragment {
     }
 
     private void clicEliminar() {
+        AlertDialog.Builder msg = new AlertDialog.Builder(this.getContext());
+
+        // Crear un ProgressBar
+        ProgressBar progressBar = new ProgressBar(this.getContext());
+        progressBar.setIndeterminate(true); // Estilo de carga indeterminada
+
+        // Crear el AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
+        builder.setTitle("Por favor, espera");
+        builder.setMessage("Conectandose con el servidor...");
+        builder.setView(progressBar);
+        builder.setCancelable(false); // Evitar que se pueda cancelar
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        RequestQueue colaDeSolicitudes= VolleySingleton.getInstance(this.getContext()).getRequestQueue();
+        StringRequest solicitud= new StringRequest(Request.Method.POST, API.ELIMINARGPO,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        dialog.dismiss();//apaga el cuadro de dialogo
+                        try {
+                            //LEER AQUI EL CONTENIDO DE LA VARIABLE response
+                            msg.setTitle("Eliminando");
+                            msg.setMessage("La información se elimino correctamente");
+                            msg.setPositiveButton("Aceptar",null);
+                            AlertDialog dialog=msg.create();
+                            msg.show();
+                            txtClaveGrupo.setText("");
+                            txtIdAsignatura.setText("");
+                            txtIdDocente.setText("");
+                            txtIdPeriodo.setText("");
+
+
+
+                        }catch (Exception ex){
+                            //DETECTA ERRORES EN LA LECTURA DEL ARCHIVO JSON
+
+                            msg.setTitle("Error");
+                            msg.setMessage("La información no se pudo eliminar");
+                            msg.setPositiveButton("Aceptar",null);
+                            AlertDialog dialog=msg.create();
+
+                            msg.show();
+
+
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                dialog.dismiss();
+                // DETECTA ERRORES EN LA COMUNICACIÓN
+                msg.setTitle("Error");
+                msg.setMessage("No se pudo conectar con el servidor");
+                msg.setPositiveButton("Aceptar",null);
+                AlertDialog dialog=msg.create();
+                msg.show();
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams(){
+                Map<String, String> param=new HashMap<String,String>();
+                //PASA PARAMETROS A LA SOLICITUD
+                param.put("idGrupo",grupo.getIdGrupo() + "");
+
+
+                return param;
+            }
+        };
+        //ENVIA LA SOLICITUD
+        colaDeSolicitudes.add(solicitud);
     }
 
 

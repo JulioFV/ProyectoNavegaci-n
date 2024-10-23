@@ -174,7 +174,42 @@
                             android:focusable="true"
                             android:elevation="4dp"
                             app:cardCornerRadius="16dp"
-                            android:id="@+id/crud_gpo_btn_eliminar">
+                            android:id="@+id/crudgpo_btnmodificar"
+                            android:visibility="gone">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center"
+                                android:background="@drawable/degradado"
+                                android:padding="16dp">
+
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/hamburguesa" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Modificar"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="18sp" />
+                            </LinearLayout>
+                        </androidx.cardview.widget.CardView>
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_margin="3dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:elevation="4dp"
+                            app:cardCornerRadius="16dp"
+                            android:id="@+id/crud_gpo_btn_eliminar"
+                            android:visibility="gone">
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"

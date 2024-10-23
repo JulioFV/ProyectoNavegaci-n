@@ -27,6 +27,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.fvjulio.navegacion.adapter.AdapterGrupo;
+import com.fvjulio.navegacion.modelo.MDocente;
 import com.fvjulio.navegacion.modelo.MGrupo;
 import com.fvjulio.navegacion.volley.VolleySingleton;
 
@@ -50,6 +51,7 @@ public class frg_grupos extends Fragment {
     private NavController navegador;
 
     private FloatingActionButton btnAdd;
+    MDocente obj = new MDocente();
 
 
 
@@ -101,7 +103,8 @@ public class frg_grupos extends Fragment {
 
         paquete= this.getArguments();
         if(paquete!=null){
-            txtNombre.setText(paquete.getString("user"));
+            obj=(MDocente) paquete.getSerializable("user");
+            txtNombre.setText(obj.getNombre() + " " + obj.getApp() + " " + obj.getApm());
         }
         navegador= Navigation.findNavController(view);//Es para que funcione el Navegador
     }
@@ -159,11 +162,14 @@ public class frg_grupos extends Fragment {
                                 obj=new MGrupo();
                                 JSONObject pos=new JSONObject(array.getString(i));
                                 obj.setIdGrupo(pos.getInt("idGrupo"));
+                                obj.setIdAsignatura(pos.getInt("idAsignatura"));
+                                obj.setIdDocente(pos.getInt("idDocente"));
+                                obj.setIdPeriodo(pos.getInt("idPeriodo"));
                                 obj.setClave(pos.getString("clave"));
                                 obj.setNombreAsig(pos.getString("nombreAsig"));
                                 obj.setNombreDoc(pos.getString("nombreDoc")+" "+pos.getString("app") + " "+
                                         pos.getString("apm"));
-                                obj.setNombrePer("nombrePer");
+                                obj.setNombrePer(pos.getString("nombrePer"));
                                 lista.add(obj);
                             }
 
@@ -171,8 +177,6 @@ public class frg_grupos extends Fragment {
                             rec.setLayoutManager(new LinearLayoutManager(getContext()));
                             adapter=new AdapterGrupo(lista);
                             rec.setAdapter(adapter);
-
-
 
                     }catch (Exception ex){
                         //DETECTA ERRORES EN LA LECTURA DEL ARCHIVO JSON
@@ -202,7 +206,7 @@ public class frg_grupos extends Fragment {
         protected Map<String, String> getParams(){
             Map<String, String> param=new HashMap<String,String>();
             //PASA PARAMETROS A LA SOLICITUD
-            param.put("id","1");
+            param.put("id",obj.getIdDocente()+"");
             return param;
         }
     };

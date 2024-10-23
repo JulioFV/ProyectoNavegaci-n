@@ -1,6 +1,8 @@
 package com.fvjulio.navegacion.modelo;
 
-public class MGrupo {
+import java.io.Serializable;
+
+public class MGrupo implements Serializable {
     private int idGrupo;
     private String clave;
     private int idAsignatura;

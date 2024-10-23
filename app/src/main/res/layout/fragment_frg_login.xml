@@ -81,6 +81,7 @@
                     <EditText
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:id="@+id/login_txt_contrasenia"
                         android:layout_weight="1"
                         android:hint="Contraseña"
                         android:inputType="textPassword"
