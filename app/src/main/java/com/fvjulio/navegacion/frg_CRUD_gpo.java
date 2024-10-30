@@ -12,8 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -21,6 +24,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.fvjulio.navegacion.adapter.AdapterGrupo;
+import com.fvjulio.navegacion.modelo.MAsignatura;
+import com.fvjulio.navegacion.modelo.MDocente;
 import com.fvjulio.navegacion.modelo.MGrupo;
 import com.fvjulio.navegacion.volley.API;
 import com.fvjulio.navegacion.volley.VolleySingleton;
@@ -28,6 +33,7 @@ import com.fvjulio.navegacion.volley.VolleySingleton;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,12 +43,17 @@ import java.util.Map;
  * create an instance of this fragment.
  */
 public class frg_CRUD_gpo extends Fragment {
-
     private EditText txtClaveGrupo, txtIdAsignatura,txtIdDocente,txtIdPeriodo;
     private CardView btnGuardar,btnEliminar;
     private Bundle paquete;
     private MGrupo grupo;
     private int op;
+    private Spinner spinAsig,spinPer;
+    private ArrayList<MAsignatura> listaAsig;
+    private ArrayList<MGrupo> listaPer;
+    private MAsignatura asigSelect;
+    private MGrupo perSelect;
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -53,6 +64,11 @@ public class frg_CRUD_gpo extends Fragment {
         txtIdPeriodo = view.findViewById(R.id.crudgpo_txt_idperiodo);
         btnEliminar=view.findViewById(R.id.crud_gpo_btn_eliminar);
         btnGuardar=view.findViewById(R.id.crudgpo_btnguardar);
+        spinAsig=view.findViewById(R.id.frgcrud_spiner_asig);//Spinner de asignaturas
+        spinPer=view.findViewById(R.id.frgcrud_spiner_per);
+
+        listaAsig= new ArrayList<MAsignatura>();//Para las asignaturas
+        listaPer= new ArrayList<MGrupo>();
         paquete=getArguments();
         if (paquete!=null){
             grupo= (MGrupo) paquete.getSerializable("objeto");
@@ -71,6 +87,35 @@ public class frg_CRUD_gpo extends Fragment {
 
             }
         }
+
+        this.cargarAsignatura(view);
+        spinPer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                perSelect = (MGrupo) parent.getItemAtPosition(position);
+                txtIdPeriodo.setText(perSelect.getIdPeriodo() + "");
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        spinAsig.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                asigSelect = (MAsignatura) parent.getItemAtPosition(position);
+                txtIdAsignatura.setText(asigSelect.getIdAsignatura()+ "");
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
         btnEliminar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,6 +130,88 @@ public class frg_CRUD_gpo extends Fragment {
         });
 
 
+    }
+
+    private void cargarAsignatura(View v){
+        // Crear el AlertDialog
+        AlertDialog.Builder msg = new AlertDialog.Builder(this.getContext());
+
+        // Crear un ProgressBar
+        ProgressBar progressBar = new ProgressBar(this.getContext());
+        progressBar.setIndeterminate(true); // Estilo de carga indeterminada
+
+        // Crear el AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
+        builder.setTitle("Por favor, espera");
+        builder.setMessage("Conectandose con el servidor...");
+        builder.setView(progressBar);
+        builder.setCancelable(false); // Evitar que se pueda cancelar
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        RequestQueue colaDeSolicitudes= VolleySingleton.getInstance(this.getContext()).getRequestQueue();
+        StringRequest solicitud= new StringRequest(Request.Method.POST, API.LISTAR_ASI,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        dialog.dismiss();//apaga el cuadro de dialogo
+                        try {
+                            //LEER AQUI EL CONTENIDO DE LA VARIABLE response
+                            JSONObject contenido=new JSONObject(response);//convierte la respuesta en un objeto JSON
+                            JSONArray array=contenido.getJSONArray("contenido");//
+                            MAsignatura obj=new MAsignatura();
+                            for(int i=0;i<array.length();i++){//recorre el arreglo
+                                obj=new MAsignatura();
+                                JSONObject pos=new JSONObject(array.getString(i));//convierte la posicion en un objeto JSON
+                                obj.setIdAsignatura(pos.getInt("idAsignatura"));
+                                obj.setNombreCorto(pos.getString("nombreCorto"));
+                                obj.setNombreLargo(pos.getString("nombreLargo"));
+                                obj.setClave(pos.getString("clave"));
+                                obj.setIdCarrera(pos.getInt("idCarrera"));
+                                listaAsig.add(obj);
+                            }
+
+                            // Crear un ArrayAdapter utilizando el array de objetos
+                            ArrayAdapter<MAsignatura> adapter = new ArrayAdapter<>(v.getContext(), android.R.layout.simple_spinner_item, listaAsig);
+                            ArrayAdapter<MGrupo> adapter2 = new ArrayAdapter<>(v.getContext(), android.R.layout.simple_spinner_item, listaPer);
+
+
+                            // Especificar el layout a usar
+                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+
+                            // Asignar el adapter al Spinner
+                            spinAsig.setAdapter(adapter);
+                            spinPer.setAdapter(adapter2);
+
+
+
+
+                        }catch (Exception ex){
+                            //DETECTA ERRORES EN LA LECTURA DEL ARCHIVO JSON
+                            msg.setTitle("Error");
+                            msg.setMessage("La información no se pudo leer");
+                            msg.setPositiveButton("Aceptar",null);
+                            AlertDialog dialog = msg.create();
+                            dialog.show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                dialog.dismiss();
+                // DETECTA ERRORES EN LA COMUNICACIÓN
+                msg.setTitle("Error");
+                msg.setMessage("No se puede conectar al servidor");
+                msg.setPositiveButton("Aceptar",null);
+                AlertDialog dialog = msg.create();
+                dialog.show();
+            }
+        });
+        //ENVIA LA SOLICITUD
+        colaDeSolicitudes.add(solicitud);
     }
 
     private void clicGuardar() {

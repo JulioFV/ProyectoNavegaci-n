@@ -172,11 +172,12 @@ public class frg_grupos extends Fragment {
                                 obj.setNombrePer(pos.getString("nombrePer"));
                                 lista.add(obj);
                             }
-
                             rec.setHasFixedSize(true);
                             rec.setLayoutManager(new LinearLayoutManager(getContext()));
                             adapter=new AdapterGrupo(lista);
                             rec.setAdapter(adapter);
+
+
 
                     }catch (Exception ex){
                         //DETECTA ERRORES EN LA LECTURA DEL ARCHIVO JSON
