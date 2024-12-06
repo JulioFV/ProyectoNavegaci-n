@@ -48,6 +48,7 @@ public class frg_grupos extends Fragment {
     private  Bundle paquete;
     private TextView txtNombre;
     private RecyclerView rec;
+
     private NavController navegador;
 
     private FloatingActionButton btnAdd;
@@ -70,22 +71,22 @@ public class frg_grupos extends Fragment {
                     clicAgregar();
                 }
             });
-            txtFiltro.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                txtFiltro.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                }
+                    }
 
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    buscador(s.toString());
-                }
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        buscador(s.toString());
+                    }
 
-                @Override
-                public void afterTextChanged(Editable s) {
+                    @Override
+                    public void afterTextChanged(Editable s) {
 
-                }
-            });
+                    }
+                });
             paquete=this.getArguments();
             if(paquete!=null){
                 txtNombre.setText(paquete.getString("user"));
@@ -112,20 +113,39 @@ public class frg_grupos extends Fragment {
     private void clicAgregar() {
         //Aqui va el nav controller
 
-        navegador.navigate(R.id.action_frg_grupos_to_frg_CRUD_gpo);
+       MGrupo obj2=new MGrupo();
+       obj2.setIdDocente(obj.getIdDocente());
+      // obj2.setNombreDoc(obj.getNombre() + " " + obj.getApp() + " " + obj.getApm());
+        paquete.putSerializable("objeto" , obj2);
+
+        navegador.navigate(R.id.action_frg_grupos_to_frg_CRUD_gpo,paquete);
 
     }
 
     private void buscador(String s) {
-       ArrayList<MGrupo> lista2=new ArrayList<MGrupo>();
+        if (s == null || s.isEmpty()) {
+            // Si la cadena es vacía, muestra todos los elementos
+            adapter.filtro(lista);
+            return;
+        }
 
-        for (MGrupo gpo: lista){
-            if(gpo.getClave().contains(s.toString()) || gpo.getNombreAsig().contains(s.toString())){
+        ArrayList<MGrupo> lista2 = new ArrayList<>();
+
+        // Convertir s a minúsculas para hacer la búsqueda insensible a mayúsculas
+        String searchString = s.toLowerCase();
+
+        for (MGrupo gpo : lista) {
+            // Comparar en minúsculas para que sea insensible a mayúsculas
+            if (gpo.getClave().toLowerCase().contains(searchString) ||
+                    gpo.getNombreAsig().toLowerCase().contains(searchString)) {
                 lista2.add(gpo);
             }
         }
+
+        // Actualizar el adaptador con la lista filtrada
         adapter.filtro(lista2);
     }
+
 
     private ArrayList<MGrupo> llenadoDesdeBD() {
         ArrayList<MGrupo> lista=new ArrayList<MGrupo>();

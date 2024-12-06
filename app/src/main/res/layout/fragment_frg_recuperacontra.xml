@@ -54,6 +54,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Ingresa tu coreo"
+                        android:id="@+id/recupera_txtcorreo"
                         android:textColor="@color/azul"
                         android:paddingStart="8dp"
                         android:paddingLeft="8dp" />

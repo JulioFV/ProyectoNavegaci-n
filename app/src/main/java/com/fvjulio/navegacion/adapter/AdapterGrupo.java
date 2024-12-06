@@ -43,11 +43,11 @@ public class AdapterGrupo extends RecyclerView.Adapter<AdapterGrupo.viewHolderGr
     @Override
     public void onBindViewHolder(@NonNull AdapterGrupo.viewHolderGrupo holder, int position) {
 
-        MGrupo gpo=lista.get(position);
-        holder.txtNombreAsignatura.setText(gpo.getNombreAsig());
-        holder.txtClaveGrupo.setText(gpo.getClave());
-        holder.txtNombreDocente.setText(gpo.getNombreDoc());
-        holder.txtPeriodo.setText(gpo.getNombrePer());
+        holder.gpo=lista.get(position);
+        holder.txtNombreAsignatura.setText(holder.gpo.getNombreAsig());
+        holder.txtClaveGrupo.setText(holder.gpo.getClave());
+        holder.txtNombreDocente.setText(holder.gpo.getNombreDoc());
+        holder.txtPeriodo.setText(holder.gpo.getNombrePer());
         paquete = new Bundle();
 
 
@@ -57,14 +57,14 @@ public class AdapterGrupo extends RecyclerView.Adapter<AdapterGrupo.viewHolderGr
         holder.btnEditar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                paquete.putSerializable("objeto" , gpo);
+                paquete.putSerializable("objeto" , holder.gpo);
                 clicEditar(v);
             }
         });
         holder.btnEliminar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                paquete.putSerializable("objeto" , gpo);
+                paquete.putSerializable("objeto" , holder.gpo);
                 clicEliminar(v);
             }
         });
@@ -74,7 +74,7 @@ public class AdapterGrupo extends RecyclerView.Adapter<AdapterGrupo.viewHolderGr
             @Override
             public void onClick(View v) {
 
-                clicVer(v,gpo);
+                clicVer(v,holder.gpo);
             }
         });
 
@@ -115,6 +115,7 @@ public class AdapterGrupo extends RecyclerView.Adapter<AdapterGrupo.viewHolderGr
         Button btnver;
         ImageView btnEditar,btnEliminar;
          TextView txtNombreAsignatura, txtNombreDocente,txtClaveGrupo,txtPeriodo,txtOp;
+         MGrupo gpo;
 
         public viewHolderGrupo(@NonNull View itemView) {
             super(itemView);

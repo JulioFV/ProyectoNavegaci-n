@@ -9,6 +9,7 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ import com.fvjulio.navegacion.adapter.AdapterGrupo;
 import com.fvjulio.navegacion.modelo.MAsignatura;
 import com.fvjulio.navegacion.modelo.MDocente;
 import com.fvjulio.navegacion.modelo.MGrupo;
+import com.fvjulio.navegacion.modelo.MPeriodo;
 import com.fvjulio.navegacion.volley.API;
 import com.fvjulio.navegacion.volley.VolleySingleton;
 
@@ -50,9 +52,10 @@ public class frg_CRUD_gpo extends Fragment {
     private int op;
     private Spinner spinAsig,spinPer;
     private ArrayList<MAsignatura> listaAsig;
-    private ArrayList<MGrupo> listaPer;
+    private ArrayList<MPeriodo> listaPer;
     private MAsignatura asigSelect;
-    private MGrupo perSelect;
+    private MPeriodo perSelect;
+    private MDocente docSelect;
 
 
     @Override
@@ -66,34 +69,41 @@ public class frg_CRUD_gpo extends Fragment {
         btnGuardar=view.findViewById(R.id.crudgpo_btnguardar);
         spinAsig=view.findViewById(R.id.frgcrud_spiner_asig);//Spinner de asignaturas
         spinPer=view.findViewById(R.id.frgcrud_spiner_per);
+        txtClaveGrupo.setEnabled(true);
 
         listaAsig= new ArrayList<MAsignatura>();//Para las asignaturas
-        listaPer= new ArrayList<MGrupo>();
+        listaPer= new ArrayList<MPeriodo>();
         paquete=getArguments();
+       // txtIdDocente.setText(grupo.getIdDocente() + "" + grupo.getNombreDoc());
         if (paquete!=null){
             grupo= (MGrupo) paquete.getSerializable("objeto");
+            docSelect= (MDocente) paquete.getSerializable("user");
+            //Log.d("Paquete Docente",docSelect.toString());
             op=paquete.getInt("op");
             txtClaveGrupo.setText(grupo.getClave());
-            txtIdAsignatura.setText(grupo.getIdAsignatura() + "");
+            txtIdAsignatura.setText(grupo.getIdAsignatura() + "  "+ grupo.getNombreAsig());
             txtIdDocente.setText(grupo.getIdDocente()+"");
-            txtIdPeriodo.setText(grupo.getIdPeriodo()+"");
+            txtIdPeriodo.setText(grupo.getIdPeriodo()+""+grupo.getNombrePer());
             if (op==1){//Opcion 1 es para ELIMINAR
                 btnEliminar.setVisibility(View.VISIBLE);
                 btnGuardar.setVisibility(View.GONE);
+                txtClaveGrupo.setEnabled(false);
+
             }
             if (op==2){//Opcion 2 es para EDITAR
                 btnEliminar.setVisibility(View.GONE);
                 btnGuardar.setVisibility(View.VISIBLE);
+                txtClaveGrupo.setEnabled(false);
 
             }
         }
-
+        this.cargarPeriodos(view);
         this.cargarAsignatura(view);
         spinPer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                perSelect = (MGrupo) parent.getItemAtPosition(position);
-                txtIdPeriodo.setText(perSelect.getIdPeriodo() + "");
+                perSelect = (MPeriodo) parent.getItemAtPosition(position);
+               txtIdPeriodo.setText(perSelect.getIdPeriodo() + "");
             }
 
             @Override
@@ -132,6 +142,96 @@ public class frg_CRUD_gpo extends Fragment {
 
     }
 
+    private void cargarPeriodos(View v) {
+        // Crear el AlertDialog
+        AlertDialog.Builder msg = new AlertDialog.Builder(this.getContext());
+
+        // Crear un ProgressBar
+        ProgressBar progressBar = new ProgressBar(this.getContext());
+        progressBar.setIndeterminate(true); // Estilo de carga indeterminada
+
+        // Crear el AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
+        builder.setTitle("Por favor, espera");
+        builder.setMessage("Conectandose con el servidor...");
+        builder.setView(progressBar);
+        builder.setCancelable(false); // Evitar que se pueda cancelar
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        RequestQueue colaDeSolicitudes= VolleySingleton.getInstance(this.getContext()).getRequestQueue();
+        StringRequest solicitud= new StringRequest(Request.Method.POST, API.LISTAR_PER,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        dialog.dismiss();//apaga el cuadro de dialogo
+                        int posi = 0;
+                        try {
+                            //LEER AQUI EL CONTENIDO DE LA VARIABLE response
+                            JSONObject contenido=new JSONObject(response);//convierte la respuesta en un objeto JSON
+                            JSONArray array=contenido.getJSONArray("contenido");//
+
+                            MPeriodo obj =new MPeriodo();
+
+                            for(int i=0;i<array.length();i++){//recorre el arreglo
+                                obj=new MPeriodo();
+                                JSONObject pos=new JSONObject(array.getString(i));//convierte la posicion en un objeto JSON
+                                obj.setIdPeriodo(pos.getInt("idPeriodo"));
+                                obj.setNombre(pos.getString("nombre"));
+                                obj.setFechaI(pos.getString("fechaI"));
+                                obj.setFechaF(pos.getString("fechaF"));
+
+
+
+                                listaPer.add(obj);
+                                if(grupo!=null)
+                                if(obj.getIdPeriodo()==grupo.getIdPeriodo()){
+                                    posi=i;
+                                }
+                            }
+
+                            // Crear un ArrayAdapter utilizando el array de objetos
+
+                            ArrayAdapter<MPeriodo> adapter2 = new ArrayAdapter<>(v.getContext(), android.R.layout.simple_spinner_item, listaPer);
+
+
+                            // Especificar el layout a usar
+                            adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+
+                            // Asignar el adapter al Spinner
+                            spinPer.setAdapter(adapter2);
+                            spinPer.setSelection(posi);
+
+
+
+
+                        }catch (Exception ex){
+                            //DETECTA ERRORES EN LA LECTURA DEL ARCHIVO JSON
+                            msg.setTitle("Error");
+                            msg.setMessage("La información no se pudo leer");
+                            msg.setPositiveButton("Aceptar",null);
+                            AlertDialog dialog = msg.create();
+                            dialog.show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                dialog.dismiss();
+                // DETECTA ERRORES EN LA COMUNICACIÓN
+                msg.setTitle("Error");
+                msg.setMessage("No se puede conectar al servidor");
+                msg.setPositiveButton("Aceptar",null);
+                AlertDialog dialog = msg.create();
+                dialog.show();
+            }
+        });
+        //ENVIA LA SOLICITUD
+        colaDeSolicitudes.add(solicitud);
+
+    }
     private void cargarAsignatura(View v){
         // Crear el AlertDialog
         AlertDialog.Builder msg = new AlertDialog.Builder(this.getContext());
@@ -155,11 +255,13 @@ public class frg_CRUD_gpo extends Fragment {
                     @Override
                     public void onResponse(String response) {
                         dialog.dismiss();//apaga el cuadro de dialogo
+                        int posi=0;
                         try {
                             //LEER AQUI EL CONTENIDO DE LA VARIABLE response
                             JSONObject contenido=new JSONObject(response);//convierte la respuesta en un objeto JSON
                             JSONArray array=contenido.getJSONArray("contenido");//
                             MAsignatura obj=new MAsignatura();
+
                             for(int i=0;i<array.length();i++){//recorre el arreglo
                                 obj=new MAsignatura();
                                 JSONObject pos=new JSONObject(array.getString(i));//convierte la posicion en un objeto JSON
@@ -169,21 +271,25 @@ public class frg_CRUD_gpo extends Fragment {
                                 obj.setClave(pos.getString("clave"));
                                 obj.setIdCarrera(pos.getInt("idCarrera"));
                                 listaAsig.add(obj);
+
+                                if(grupo!=null)
+                                if(obj.getIdAsignatura()==grupo.getIdAsignatura()){
+                                    posi=i;
+                                }
                             }
 
                             // Crear un ArrayAdapter utilizando el array de objetos
                             ArrayAdapter<MAsignatura> adapter = new ArrayAdapter<>(v.getContext(), android.R.layout.simple_spinner_item, listaAsig);
-                            ArrayAdapter<MGrupo> adapter2 = new ArrayAdapter<>(v.getContext(), android.R.layout.simple_spinner_item, listaPer);
 
 
                             // Especificar el layout a usar
-                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                            adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);;
 
 
                             // Asignar el adapter al Spinner
                             spinAsig.setAdapter(adapter);
-                            spinPer.setAdapter(adapter2);
+                            spinAsig.setSelection(posi);
+
 
 
 
@@ -213,7 +319,6 @@ public class frg_CRUD_gpo extends Fragment {
         //ENVIA LA SOLICITUD
         colaDeSolicitudes.add(solicitud);
     }
-
     private void clicGuardar() {
         if(op==2){
             editar();
@@ -222,7 +327,6 @@ public class frg_CRUD_gpo extends Fragment {
             Guardar();
         }
     }
-
     private void editar() {
         AlertDialog.Builder msg = new AlertDialog.Builder(this.getContext());
 
@@ -298,7 +402,6 @@ public class frg_CRUD_gpo extends Fragment {
 
 
     }
-
     private void Guardar() {
 
         AlertDialog.Builder msg = new AlertDialog.Builder(this.getContext());
@@ -361,9 +464,13 @@ public class frg_CRUD_gpo extends Fragment {
                 Map<String, String> param=new HashMap<String,String>();
                 //PASA PARAMETROS A LA SOLICITUD
                 param.put("clave",txtClaveGrupo.getText().toString());
+
+                param.put("idDocente",grupo.getIdDocente() + "");
+
                 param.put("idAsignatura",txtIdAsignatura.getText().toString());
-                param.put("idDocente",txtIdDocente.getText().toString());
-                param.put("idPeriodo",txtIdPeriodo.getText().toString());
+
+                param.put("idPeriodo",perSelect.getIdPeriodo() + "");
+
                 return param;
             }
         };
@@ -373,7 +480,6 @@ public class frg_CRUD_gpo extends Fragment {
 
 
     }
-
     private void clicEliminar() {
         AlertDialog.Builder msg = new AlertDialog.Builder(this.getContext());
 
